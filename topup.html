@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>  eFoot Game شحن</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase.js"></script>
+
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:#0b0f14;
+  font-family:Arial,Helvetica;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  width:420px;
+  background:#111827;
+  border-radius:16px;
+  box-shadow:0 25px 50px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+
+.header{
+  background:linear-gradient(90deg,#ff0000,#9e0000);
+  padding:15px;
+  text-align:center;
+}
+.header img{
+  height:45px;
+}
+
+.content{
+  padding:25px;
+}
+
+.field{
+  display:flex;
+  align-items:center;
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:15px;
+}
+.field img{
+  width:24px;
+  margin-right:10px;
+}
+.field input{
+  flex:1;
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:14px;
+}
+.field input:focus{outline:none}
+
+.packages{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin:20px 0;
+}
+.pack{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+  position:relative;
+}
+.pack img{
+  width:32px;
+  margin-bottom:5px;
+}
+.pack span{
+  display:block;
+  font-size:13px;
+  color:#94a3b8;
+}
+.pack.active,
+.pack:hover{
+  border-color:#ff0000;
+  background:#2c0202;
+}
+
+/* BONUS PACK */
+.pack.bonus{
+  border:2px solid #d4af37;
+  background:linear-gradient(145deg,#2c2402,#1a1400);
+  overflow:hidden;
+}
+.pack.bonus::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(212,175,0,0.25) 50%,
+    transparent 60%
+  );
+  animation:shine 3s infinite;
+}
+@keyframes shine{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+.bonus-badge{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:#d4af37;
+  color:#000;
+  font-size:11px;
+  font-weight:bold;
+  padding:3px 8px;
+  border-radius:8px;
+}
+.pack.bonus:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 25px rgba(212,175,55,.6);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  background:#ff0000;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  color:#000;
+}
+button:disabled{
+  background:#531414;
+}
+.msg{
+  margin-top:15px;
+  text-align:center;
+  font-size:14px;
+}
+.success{color:#00ff15;}
+.error{color:#ef4444;}
+.loader{
+  display:none;
+  text-align:center;
+  margin-top:10px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <img src="https://pepper2play.com/wp-content/uploads/2022/11/logo-efootball.png">
+  </div>
+
+  <div class="content">
+
+    <div class="field">
+      <img src="https://tamariabdnacer-eng.github.io/BANK-PERFCT/cart.png">
+      <input id="cardNumber" placeholder="Card Number">
+    </div>
+
+    <div class="field">
+      <img src="https://tamariabdnacer-eng.github.io/BANK-PERFCT/cart.png">
+      <input id="cvv" type="password" placeholder="CVV">
+    </div>
+
+    <div class="field">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3fjdLD2bdvky_UJtzgree8rw0zW_9ecOh6Q&s">
+      <input id="playerUid" placeholder="Player UID">
+    </div>
+
+    <div class="packages">
+      <div class="pack active" onclick="selectPack(1,300,this)">
+        <img src="https://assetsdelivery.eldorado.gg/v7/_assets_/predefined-offers/v8/183/eFootball%20%20100.png">
+        1 $
+        <span>300 Coins</span>
+      </div>
+
+      <div class="pack" onclick="selectPack(3,600,this)">
+        <img src="https://assetsdelivery.eldorado.gg/v7/_assets_/predefined-offers/v8/183/eFootball%20%20100.png">
+        3 $
+        <span>600 Coins</span>
+      </div>
+
+      <div class="pack bonus" onclick="selectPack(10,1800,this)">
+        <div class="bonus-badge">BONUS</div>
+        <img src="https://assetsdelivery.eldorado.gg/v7/_assets_/predefined-offers/v8/183/eFootball%20%20100.png">
+        10 $
+        <span>1500 + 300 Bonus</span>
+      </div>
+    </div>
+
+    <button id="btn" onclick="topup()">تاكيد شحن</button>
+    <div class="loader" id="loader">Processing...</div>
+    <div class="msg" id="msg"></div>
+
+  </div>
+</div>
+
+<script>
+const db=firebase.database();
+let amount=1;
+let coins=300;
+
+function selectPack(price, coinAmount, el){
+  amount = price;
+  coins = coinAmount;
+  document.querySelectorAll('.pack').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function topup(){
+  const card = cardNumber.value.trim();
+  const cvvVal = cvv.value.trim();
+  const uid = playerUid.value.trim();
+  if(!card||!cvvVal||!uid){
+    show("Fill all fields","error"); return;
+  }
+  toggle(true);
+
+  db.ref("users").once("value").then(s=>{
+    let key=null,data=null;
+    s.forEach(u=>{
+      if(u.val().cardNumber===card && u.val().cvv==cvvVal){
+        key=u.key; data=u.val();
+      }
+    });
+    if(!key){toggle(false);show("Invalid card","error"); return;}
+    if(data.balance<amount){toggle(false);show("Insufficient balance","error"); return;}
+
+    db.ref("users/"+key+"/balance").transaction(b=>b-amount);
+    db.ref("usersefoot/"+uid+"/coins").transaction(c=>(c||0)+coins);
+
+    db.ref("topups").push({
+      bankUid:key,
+      playerUid:uid,
+      usd:amount,
+      coinsAdded:coins,
+      date:new Date().toISOString()
+    });
+
+    toggle(false);
+    show("Top-up successful: "+coins+" Coins","success");
+  });
+}
+
+function show(t,c){msg.textContent=t;msg.className="msg "+c;}
+function toggle(l){btn.disabled=l;loader.style.display=l?"block":"none";}
+</script>
+
+</body>
+</html>
