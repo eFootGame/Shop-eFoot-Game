@@ -1,7 +1,8 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyAM7gLKuLRfhFdWyakFS1jU4c8xU1fg-FU",
-  authDomain: "family-bank-966ae.firebaseapp.com",
-  databaseURL: "https://family-bank-966ae-default-rtdb.firebaseio.com",
-  projectId: "family-bank-966ae",
+  apiKey: "AIzaSyCHOrJmI1qXr2bbucjq8pXdRCeByPCZqyg",
+  authDomain: "perfect-65fc7.firebaseapp.com",
+  databaseURL: "https://perfect-65fc7-default-rtdb.firebaseio.com",
+  projectId: "perfect-65fc7",
 };
 firebase.initializeApp(firebaseConfig);
+
